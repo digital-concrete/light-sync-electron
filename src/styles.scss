@@ -1,0 +1,20 @@
+/* You can add global styles to this file, and also import other style files */
+/* You can add global styles to this file, and also import other style files */
+@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+@import "app/scss/material.css";
+@import "app/scss/dark.css";
+
+.docs-app-background {
+    background: #303030;
+}
+
+.centered-spinner {
+    top: 50%;
+    left: 50%;
+    margin-top: -50px!important;
+    margin-left: -50px!important;
+  }
+
+.mat-button-toggle-label-content{
+    width: 100%!important;
+}

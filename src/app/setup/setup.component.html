@@ -1,0 +1,326 @@
+<mat-card style="max-width: 400px; height:calc(91% + 3px)">
+    <mat-card-content style="height:100%">
+      <div class="layout-column layout-fill layout-align-space-between-center">
+
+          <div class="layout-column flex" style="width:100%">
+            <form  #setupForm="ngForm" class="layout-column" [ngClass]="{'hide' : advancedSettingsExpanded}">
+              <p mat-subheader style="margin-top:0; margin-bottom: 0">Max Brightness</p>
+              <mat-slider
+                min="1"
+                max="255"
+                id="maxBrightness"
+                required
+                [(ngModel)]="setupModel.maxBrightness" name="maxBrightness">
+              </mat-slider>
+              <p mat-subheader style="margin-top:0; margin-bottom: 0">Sensitivity</p>
+              <mat-slider
+                min="1"
+                max="100"
+                id="sensitivity"
+                required
+                [(ngModel)]="setupModel.sensitivity" 
+                (change)="onSensitivityChange($event)"
+                name="sensitivity">
+              </mat-slider>
+              <p mat-subheader style="margin-top:0px; margin-bottom: 15px">Effect on dark screens</p>
+              <mat-button-toggle-group name="dimLightsInsteadOfTurnOff" [(ngModel)]="setupModel.dimLightsInsteadOfTurnOff"
+                    [value]="setupModel.dimLightsInsteadOfTurnOff" aria-label="dimLightsInsteadOfTurnOff"
+                    style="margin-bottom: 20px">
+                  <mat-button-toggle class="flex" value="True" matTooltip="Dim lights on dark screens">Dim lights</mat-button-toggle>
+                  <mat-button-toggle class="flex" value="False" matTooltip="Turn lights off on dark screens">Turn Off</mat-button-toggle>
+              </mat-button-toggle-group>
+              <!-- <p mat-subheader style="margin-top:15px; margin-bottom: 15px">Transition effect</p>
+              <mat-button-toggle-group name="transitionType" [(ngModel)]="setupModel.transitionType"
+                    [value]="setupModel.transitionType" aria-label="Transition Type">
+                  <mat-button-toggle class="flex" value="2" matTooltip="Smooth transition. For slow changing frames.">Smooth</mat-button-toggle>
+                  <mat-button-toggle class="flex" value="1" matTooltip="True feel transition algorithm. Recommended for all uses.">True Feel</mat-button-toggle>
+                  <mat-button-toggle class="flex" value="0" matTooltip="Instant transition. For gaming and quick frame changing activity.">Instant</mat-button-toggle>
+              </mat-button-toggle-group> -->
+              <p mat-subheader *ngIf="setupModel.dimLightsInsteadOfTurnOff == 'True'"
+              style="margin-top:0px; margin-bottom: 0">Dim Brightness (top limit is max brightness)</p>
+              <mat-slider *ngIf="setupModel.dimLightsInsteadOfTurnOff == 'True'"
+                min="0"
+                max="setupModel.maxBrightness"
+                id="minBrightness"
+                required
+                [(ngModel)]="setupModel.minBrightness" name="minBrightness">
+              </mat-slider>
+              <p mat-subheader style="margin-top:0px; margin-bottom: 15px">Full Screen / Stereo effect</p>
+              <mat-button-toggle-group name="screenDist" [(ngModel)]="setupModel.screenDist"
+                    [value]="setupModel.screenDist" aria-label="screen Distribution">
+                  <mat-button-toggle class="flex" value="full" matTooltip="Use full screen for all lights">Full</mat-button-toggle>
+                  <mat-button-toggle class="flex" value="stereo" matTooltip="Stereo effect">Stereo</mat-button-toggle>
+                  <mat-button-toggle class="flex" value="sides" matTooltip="Stereo effect working with screen edges">Sides</mat-button-toggle>
+              </mat-button-toggle-group> 
+            </form>
+
+            <div style="height:20px"></div>
+
+            <div class="layout-row layout-align-center-center" *ngIf="!showLoading" [ngClass]="{'hide' : advancedSettingsExpanded}">
+              <mat-form-field class="flex" *ngIf="setupModel.screenDist == 'full'">
+                <mat-select placeholder="Lights" [(ngModel)]="selectedLightsFull" multiple>
+                  <mat-option *ngFor="let light of availableLights" [value]="light.name">{{light.name}}</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field class="flex" *ngIf="setupModel.screenDist == 'stereo' || setupModel.screenDist == 'sides'" style="margin-right:15px">
+                  <mat-select placeholder="Lights Left" 
+                  [formControl]="selectedLightsStereoLeft" 
+                  multiple
+                  (selectionChange)="onLightOptionSelectionChange($event, selectedLightsStereoRight)">
+                    <mat-option *ngFor="let light of availableLights" [value]="light.name">{{light.name}}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field class="flex" *ngIf="setupModel.screenDist == 'stereo' || setupModel.screenDist == 'sides'" style="margin-left:15px">
+                    <mat-select placeholder="Lights Right" 
+                    [formControl]="selectedLightsStereoRight" 
+                    multiple
+                    (selectionChange)="onLightOptionSelectionChange($event, selectedLightsStereoLeft)">
+                      <mat-option 
+                      *ngFor="let light of availableLights" 
+                      [value]="light.name"
+                      >{{light.name}}</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+            </div>
+            
+            <div class="flex" *ngIf="showLoading">
+              <mat-spinner class="centered-spinner"></mat-spinner>
+            </div>
+
+            <div style="height:48px" [hidden]="devMode"></div>
+            <mat-accordion [hidden]="!devMode">
+                <mat-expansion-panel [expanded]="advancedSettingsExpanded" (opened)="onAdvancedSettingsOpened()" (closed)="onAdvancedSettingsClosed()">
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>
+                      Advanced settings
+                    </mat-panel-title>
+                  </mat-expansion-panel-header>
+                  <form  #advancedSetupForm="ngForm" class="layout-column layout-align-space-between-center">
+                    <div class="layout-row layout-row layout-align-space-between-center">
+                      <mat-form-field appearance="outline" class="flex-30">
+                        <mat-label>Frame Match Sensitivity</mat-label>
+                        <input matInput placeholder="Value (0-1)" type="number" 
+                        min="0" max="1" step="0.001" class="example-right-align"
+                        id="frameMatchSensitivity"
+                          required
+                          [(ngModel)]="setupModel.frameMatchSensitivity" name="frameMatchSensitivity"
+                          >
+                      </mat-form-field>
+                      <mat-form-field appearance="outline" class="flex-30">
+                        <mat-label>Color Skip Sensitivity</mat-label>
+                        <input matInput placeholder="Value (1-255)" type="number" 
+                        min="1" max="255" step="1" pattern="\d*" class="example-right-align"
+                        id="colorSkipSensitivity"
+                          required
+                          [(ngModel)]="setupModel.colorSkipSensitivity" name="colorSkipSensitivity"
+                          >
+                      </mat-form-field>
+                      <mat-form-field appearance="outline" class="flex-30">
+                        <mat-label>Channels Min Threshold</mat-label>
+                        <input matInput placeholder="Value (1-255)" type="number" 
+                        min="1" max="255" step="1" pattern="\d*" class="example-right-align"
+                        id="channelsMinThreshold"
+                          required
+                          [(ngModel)]="setupModel.channelsMinThreshold" name="channelsMinThreshold"
+                          >
+                      </mat-form-field>
+                    </div>
+                    <div class="layout-row layout-row layout-align-space-between-center">
+                      <mat-form-field appearance="outline" class="flex-30">
+                        <mat-label>Channels Max Threshold</mat-label>
+                        <input matInput placeholder="Value (1-255)" type="number" 
+                        min="1" max="255" step="1" pattern="\d*" class="example-right-align"
+                        id="channelsMaxThreshold"
+                          required
+                          [(ngModel)]="setupModel.channelsMaxThreshold" name="channelsMaxThreshold"
+                          >
+                      </mat-form-field>
+                      <mat-form-field appearance="outline" class="flex-30">
+                        <mat-label>Min NZ Count</mat-label>
+                        <input matInput placeholder="Value (0-100)" type="number" 
+                        min="0" max="100" step="0.01" class="example-right-align"
+                        id="minNzCount"
+                          required
+                          [(ngModel)]="setupModel.minNzCount" name="minNzCount"
+                          >
+                      </mat-form-field>
+                
+                      <mat-form-field appearance="outline" class="flex-30">
+                        <mat-label>Max NZ Count</mat-label>
+                        <input matInput placeholder="Value (1-100)" type="number" 
+                        min="0" max="100" class="example-right-align"
+                        id="maxNzCount"
+                          required
+                          [(ngModel)]="setupModel.maxNzCount" name="maxNzCount"
+                          >
+                      </mat-form-field>
+                    </div>
+                    <div class="layout-row layout-row layout-align-space-between-center">
+                      <mat-form-field appearance="outline" class="flex-30">
+                        <mat-label>Color Spred Threshold</mat-label>
+                        <input matInput placeholder="Value (0-100)" type="number" 
+                        min="0" max="100" step="0.001" class="example-right-align"
+                        id="colorSpreadThreshold"
+                          required
+                          [(ngModel)]="setupModel.colorSpreadThreshold" name="colorSpreadThreshold"
+                          >
+                      </mat-form-field>
+                      <mat-form-field appearance="outline" class="flex-30">
+                        <mat-label>K Means Clusters</mat-label>
+                        <input matInput placeholder="Value (1-20)" type="number" 
+                        min="1" max="20" step="1"pattern="\d*" class="example-right-align"
+                        id="kMeansClusters"
+                          required
+                          [(ngModel)]="setupModel.kMeansClusters" name="kMeansClusters"
+                          >
+                      </mat-form-field>
+                      <mat-form-field appearance="outline" class="flex-30">
+                        <mat-label>Shrink frame size</mat-label>
+                        <input matInput type="number" 
+                        min="50" max="5000" step="1"pattern="\d*" class="example-right-align"
+                        id="shrinkFrameSize"
+                          required
+                          [(ngModel)]="setupModel.shrinkFrameSize" name="shrinkFrameSize"
+                          >
+                      </mat-form-field>
+                    </div>
+                    <div class="layout-row layout-row layout-align-space-between-center">
+                        <mat-form-field appearance="outline" class="flex-30">
+                            <mat-label>Max Req per second</mat-label>
+                            <input matInput type="number" 
+                            min="1" max="100" step="1"pattern="\d*" class="example-right-align"
+                            id="maxRequestsPerSecond"
+                              required
+                              [(ngModel)]="setupModel.maxRequestsPerSecond" name="maxRequestsPerSecond"
+                              >
+                        </mat-form-field>
+                      <mat-form-field appearance="outline" class="flex-30">
+                        <mat-label>Transition Time</mat-label>
+                        <input matInput placeholder="Value (1-20)" type="number" 
+                        min="1" max="20" step="1" class="example-right-align"
+                        id="transitionTime"
+                          required
+                          [(ngModel)]="setupModel.transitionTime" name="transitionTime"
+                          >
+                      </mat-form-field>
+                      <mat-form-field appearance="outline" class="flex-30">
+                        <mat-label>True Feel sensitivity</mat-label>
+                        <input matInput placeholder="Value (0-1)" type="number" 
+                        min="0" max="1" step="0.001" class="example-right-align"
+                        id="frameTransitionSensitivity"
+                          required
+                          [(ngModel)]="setupModel.frameTransitionSensitivity" name="frameTransitionSensitivity"
+                          >
+                      </mat-form-field>
+                    </div>
+
+                    <!-- FLICKER STUFF -->
+                    <div class="layout-row layout-fill layout-row layout-align-left-center" style="margin-bottom:20px">
+                      <mat-slide-toggle 
+                      [formControl]="flickerCorrectionSlideToggle"
+                      (change)="onflickerCorrectionSlideToggleChange($event)"
+                      >Flicker correction</mat-slide-toggle>
+                    </div>
+                    <div class="layout-row layout-row layout-align-space-between-center" [ngClass]="{'hide' : !setupModel.flickerCorrection}">
+                      <mat-form-field appearance="outline" class="flex-30">
+                          <mat-label>Flicker reset counter</mat-label>
+                          <input matInput type="number" 
+                          min="1" max="100" step="1"pattern="\d*" class="example-right-align"
+                          id="flickerResetCounter"
+                            required
+                            [(ngModel)]="setupModel.flickerResetCounter" name="flickerResetCounter"
+                            >
+                      </mat-form-field>
+                      <mat-form-field appearance="outline" class="flex-30">
+                        <mat-label>Flicker reset sensitivity</mat-label>
+                        <input matInput placeholder="Value (0-1)" type="number" 
+                        min="0" max="1" step="0.01" class="example-right-align"
+                        id="flickeRresetSensitivity"
+                          required
+                          [(ngModel)]="setupModel.flickeRresetSensitivity" name="flickeRresetSensitivity"
+                          >
+                      </mat-form-field>
+                      <mat-form-field appearance="outline" class="flex-30">
+                        <mat-label>Color FLicker sensitivity</mat-label>
+                        <input matInput placeholder="Value (0-1)" type="number" 
+                        min="0" max="1" step="0.01" class="example-right-align"
+                        id="colorFlickerSensitivity"
+                          required
+                          [(ngModel)]="setupModel.colorFlickerSensitivity" name="colorFlickerSensitivity"
+                          >
+                      </mat-form-field>
+                    </div>
+
+                    <div class="layout-row layout-row layout-align-space-between-center" [ngClass]="{'hide' : !setupModel.flickerCorrection}">
+                      <mat-form-field appearance="outline" class="flex-30">
+                          <mat-label>Color flicker required input frames</mat-label>
+                          <input matInput type="number" 
+                          min="1" max="20" step="1"pattern="\d*" class="example-right-align"
+                          id="colorFlickerInput"
+                            required
+                            [(ngModel)]="setupModel.colorFlickerInput" name="colorFlickerInput"
+                            >
+                      </mat-form-field>
+                      <mat-form-field appearance="outline" class="flex-30">
+                        <mat-label>On Off flicker required input frames</mat-label>
+                        <input matInput type="number" 
+                        min="1" max="20" step="1"pattern="\d*" class="example-right-align"
+                        id="onOffFlickerInput"
+                          required
+                          [(ngModel)]="setupModel.onOffFlickerInput" name="onOffFlickerInput"
+                          >
+                        </mat-form-field>
+                        <mat-form-field appearance="outline" class="flex-30">
+                          <mat-label>Color flicker count</mat-label>
+                          <input matInput placeholder="Value (0-1)" type="number" 
+                          min="0" max="20" step="1" class="example-right-align"
+                          id="colorFlickerCount"
+                            required
+                            [(ngModel)]="setupModel.colorFlickerCount" name="colorFlickerCount"
+                            >
+                        </mat-form-field>
+                      </div>
+
+                      <div class="layout-row layout-row layout-align-space-between-center" [ngClass]="{'hide' : !setupModel.flickerCorrection}">
+                        <mat-form-field appearance="outline" class="flex-30">
+                          <mat-label>On Off flicker count</mat-label>
+                          <input matInput placeholder="Value (0-1)" type="number" 
+                          min="0" max="20" step="1" class="example-right-align"
+                          id="onOffFlickerCount"
+                            required
+                            [(ngModel)]="setupModel.onOffFlickerCount" name="onOffFlickerCount"
+                            >
+                        </mat-form-field>
+                        <mat-form-field appearance="outline" class="flex-30">
+                          <mat-label>Min NZ Correction</mat-label>
+                          <input matInput placeholder="Value (0-1)" type="number" 
+                          min="0" max="1" step="0.01" class="example-right-align"
+                          id="onOffFlickerMinNzCorrection"
+                            required
+                            [(ngModel)]="setupModel.onOffFlickerMinNzCorrection" name="onOffFlickerMinNzCorrection"
+                            >
+                        </mat-form-field>
+                        <mat-form-field appearance="outline" class="flex-30">
+                          <mat-label>Channels Min Threshold Correction</mat-label>
+                          <input matInput placeholder="Value (0-1)" type="number" 
+                          min="0" max="1" step="0.01" class="example-right-align"
+                          id="onOffFlickerChannelsMinCorrection"
+                            required
+                            [(ngModel)]="setupModel.onOffFlickerChannelsMinCorrection" name="onOffFlickerChannelsMinCorrection"
+                            >
+                        </mat-form-field>
+                    </div>
+  
+                    <!-- END FLICKER STUFF -->
+                  </form>
+                </mat-expansion-panel> 
+            </mat-accordion> 
+        </div>
+            
+        <div class="layout-row layout-align-center-center" [ngClass]="{'hide' : advancedSettingsExpanded}">
+          <button mat-raised-button color="primary" (click)="startHueSync(setupForm, advancedSetupForm)">START HUE SYNC</button>
+          <button mat-button color="primary" (click)="resetDefaults()">DEFAULTS</button>
+        </div>
+      </div>
+  </mat-card-content>
+</mat-card>

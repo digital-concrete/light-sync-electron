@@ -1,0 +1,33 @@
+<mat-card style="height:calc(91% + 3px)">
+  <mat-card-content class="layout-fill">
+
+      <mat-spinner *ngIf="!bridgeIp && !finishedBridgeSearch" class="centered-spinner"></mat-spinner>
+
+      <div class="layout-column layout-fill layout-align-center-center" *ngIf="bridgeIp && !buttonNotPressed">
+         <div style="text-align: center">
+          <h2 class="example-h2">Please press Bridge button</h2>
+          <mat-progress-bar mode="determinate" [value]="displayVal"></mat-progress-bar>
+        </div>
+        <div class="flex-70" style="margin-top:20px; width:100%; background: url(assets/pushlink_bridgev2.svg); background-repeat: no-repeat; background-position: center; ">
+      </div>
+    </div>
+    
+    <div class="layout-column layout-fill layout-align-center-center" *ngIf="!bridgeIp && finishedBridgeSearch">
+        <div style="text-align: center">
+          <h2 class="example-h2">No Philips Hue Bridges found on this network... :(</h2>
+        </div>
+        <div class="layout-row layout-align-center-center" style="margin-top:20px">
+          <button mat-raised-button color="primary" (click)="retryDiscovery()">Redo Discovery</button>
+        </div>
+    </div>
+    
+    <div class="layout-column layout-fill layout-align-center-center" *ngIf="bridgeIp && buttonNotPressed">
+        <div style="text-align: center">
+          <h2 class="example-h2">You have to press the bridge button within 30 seconds in order to use the app.</h2>
+        </div>
+        <div class="layout-row layout-align-center-center" style="margin-top:20px">
+          <button mat-raised-button color="primary" (click)="retryRegister()">Retry</button>
+        </div>
+    </div>
+  </mat-card-content>
+</mat-card>

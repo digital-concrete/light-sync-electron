@@ -1,0 +1,21 @@
+<mat-card style="height:calc(91% + 3px)">
+  <mat-card-content class="layout-fill">
+    <div class="layout-fill layout-column">
+      
+      <div class="layout-column flex layout-align-space-between-center">
+          <div></div>
+          <div>
+          <div style="text-align: center">
+            <h2 class="example-h2">Hue Sync Script is running</h2>
+            <h2 class="example-h2">Enjoy!</h2>
+          </div>
+          <mat-progress-bar mode="buffer"></mat-progress-bar>
+          </div>
+          <div></div>
+      </div>
+      <div class="layout-row layout-align-center-center" style="margin-top:20px">
+        <button mat-raised-button color="primary" (click)="stopHueSync()">STOP</button>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>
