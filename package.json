@@ -1,6 +1,6 @@
 {
-  "name": "huesync-electron",
-  "productName": "Huesync Electron",
+  "name": "lightsync-electron",
+  "productName": "LightSync Electron",
   "version": "0.0.1",
   "main": "main.js",
   "scripts": {
@@ -12,9 +12,9 @@
     "e2e": "ng e2e",
     "electron": "electron .",
     "electron-build": "ng build --prod && electron .",
-    "package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=dist/assets/icon/icon.icns --prune=true --out=release-builds",
-    "package-win": "electron-packager . hue-sync-experimental --overwrite --prune=true --asar.unpackDir=dist/assets  --icon=dist/assets/icon/icon.ico --out=release-builds",
-    "package-linux": "electron-packager .  hue-sync-experimental --overwrite --asar.unpackDir=dist/assets --platform=linux --arch=x64 --icon=assets/icon/512x512.png --prune=true --out=release-builds"
+    "package-mac": "electron-packager . light-sync --overwrite --platform=darwin --arch=x64 --icon=dist/assets/icon/icon.icns --prune=true --out=release-builds",
+    "package-win": "electron-packager . light-sync --overwrite --prune=true --asar.unpackDir=dist/assets  --icon=dist/assets/icon/icon.ico --out=release-builds",
+    "package-linux": "electron-packager . light-sync --overwrite --asar.unpackDir=dist/assets --platform=linux --arch=x64 --icon=assets/icon/512x512.png --prune=true --out=release-builds"
   },
   "private": true,
   "dependencies": {

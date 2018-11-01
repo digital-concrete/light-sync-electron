@@ -1,8 +1,8 @@
-# Huesync Electron
+# Light Sync Electron
 
 This is the UI for:
 
-https://github.com/digital-concrete/hue-ambiance
+https://github.com/digital-concrete/light-sync
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 6.0.0.
 It is based on [ElectronJS](https://electronjs.org/) and is therefore, multiplatform.
@@ -15,9 +15,9 @@ Node JS, NPM and Pyinstaller
 
 Download and follow the instructions from the following repo:
 
-https://github.com/digital-concrete-jungle/hue-ambiance
+https://github.com/digital-concrete/light-sync
 
-When ready, run `pyinstaller -F hue-ambiance`
+When ready, run `pyinstaller -F light_sync.py`
 
 Copy the result compiled file from `dist` folder to `src/assets` in the Electron app folder
 
@@ -29,9 +29,9 @@ On Windows modify the html of Connect, Setup and Live components from ```height:
 
 Run `npm run electron-build` for compiling
 
-On Linux and Mac you must go into ```dist/assets``` folder and give permission for  ```hue_ambiance``` script to be executed:
+On Linux and Mac you must go into ```dist/assets``` folder and give permission for  ```light_sync``` script to be executed:
 
-`chmod +x hue_ambiance`
+`chmod +x light_sync`
 
 Run `npm run electron` for running the compiled app
 
