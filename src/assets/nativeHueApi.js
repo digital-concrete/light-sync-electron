@@ -41,14 +41,14 @@ window.hueStart = function(params){
     var productionEnv = process.env; // TODO should clone process.env like utils.extend
     productionEnv.PYTHONUNBUFFERED = 'PYTHONUNBUFFERED';
     
-    let pathToHueSync = path.join(__dirname.replace('app.asar', 'app.asar.unpacked'), 'assets', 'hue_ambiance');
+    let pathToLightSync = path.join(__dirname.replace('app.asar', 'app.asar.unpacked'), 'assets', 'light_sync');
     let pathToWorkingDirectory = path.join(__dirname.replace('app.asar', 'app.asar.unpacked'), 'assets');
     
     if(os.platform() === 'win32'){
-        pathToHueSync = path.join(__dirname.replace('app.asar', 'app.asar.unpacked'), 'assets', 'hue_ambiance.exe');
+        pathToLightSync = path.join(__dirname.replace('app.asar', 'app.asar.unpacked'), 'assets', 'light_sync.exe');
     }
 
-    var hueProc = child_process.spawn(pathToHueSync, params, {env: productionEnv, cwd: pathToWorkingDirectory});
+    var hueProc = child_process.spawn(pathToLightSync, params, {env: productionEnv, cwd: pathToWorkingDirectory});
 
     ipcRenderer.send('pid-message', hueProc.pid);
 
@@ -128,7 +128,7 @@ window.findBridges = function(){
 
 window.bridgeRegister = function(bridgeIp){
     var host = bridgeIp;
-    userDescription = "experimental hue sync app";
+    userDescription = "light sync app";
 
     var onRegisterSuccess = function(result) {
         var userId = JSON.stringify(result)

@@ -140,7 +140,7 @@ export class SetupComponent implements OnInit {
     }
   }
   
-  startHueSync(setupForm, advancedSetupForm){
+  startLightSync(setupForm, advancedSetupForm){
 
     console.log(this.selectedLightsFull);
     // console.log(setupForm)

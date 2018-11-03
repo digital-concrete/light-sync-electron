@@ -54,7 +54,7 @@ app.on('will-quit', function(event) {
   if(os.platform() === 'win32'){
     event.preventDefault();
     // child_process.exec('taskkill /pid ' + pid + ' /T /F')
-    child_process.exec('taskkill /F /IM hue_ambiance.exe')
+    child_process.exec('taskkill /F /IM hue_sync.exe')
     setTimeout(function () {
       app.exit();
     }, 190);

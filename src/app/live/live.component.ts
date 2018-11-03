@@ -20,7 +20,7 @@ export class LiveComponent implements OnInit {
   ngOnInit() {
     this.hueService.startWatchingForScriptErrors().then(()=>{},
   ()=>{
-    this.stopHueSync();
+    this.stopLightSync();
     this.showErrorSnackBar();
   })
   }
@@ -31,7 +31,7 @@ export class LiveComponent implements OnInit {
     });
   }
   
-  stopHueSync(){
+  stopLightSync(){
     this.scriptRunning = false;
     this.hueService.hueStop();
     this.router.navigate(['/setup']);

@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "huesync-electron": {
+    "lightsync-electron": {
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
@@ -54,18 +54,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "huesync-electron:build"
+            "browserTarget": "lightsync-electron:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "huesync-electron:build:production"
+              "browserTarget": "lightsync-electron:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "huesync-electron:build"
+            "browserTarget": "lightsync-electron:build"
           }
         },
         "test": {
@@ -81,8 +81,7 @@
             "scripts": [],
             "assets": [
               "src/favicon.ico",
-              "src/assets",
-              "hue_ambiance_auto_discovery"
+              "src/assets"
             ]
           }
         },
@@ -100,7 +99,7 @@
         }
       }
     },
-    "huesync-electron-e2e": {
+    "lightsync-electron-e2e": {
       "root": "e2e/",
       "projectType": "application",
       "architect": {
@@ -108,7 +107,7 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "huesync-electron:serve"
+            "devServerTarget": "lightsync-electron:serve"
           }
         },
         "lint": {
@@ -123,5 +122,5 @@
       }
     }
   },
-  "defaultProject": "huesync-electron"
+  "defaultProject": "lightsync-electron"
 }
