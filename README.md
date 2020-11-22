@@ -25,6 +25,9 @@ Run `npm install`
 
 # Building & Running
 
+For DevTools debug uncomment following line in main.js:
+```//win.webContents.openDevTools()```
+
 On Windows modify the html of Connect, Setup and Live components from ```height:calc(91% + 3px)``` to ```height:calc(91% + 0px)```
 
 Run `npm run electron-build` for compiling

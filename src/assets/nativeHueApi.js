@@ -1,7 +1,7 @@
 var fs = require('fs');
 var electron = require('electron');
 var child_process = require('child_process');
-var hue = require("node-hue-api");
+var hue = require("node-hue-api").v3;
 var ipcRenderer = require('electron').ipcRenderer;
 var path = require('path');
 var os = require('os');
@@ -11,9 +11,9 @@ var displayBridges = function(bridge) {
 	console.log("Hue Bridges Found: " + JSON.stringify(bridge));
 };
 
-var writeConfigFile = function(bridgeIp, userId){
+var writeConfigFile = function(bridgeIp, userId, clientkey){
 
-    var content = '{"' + bridgeIp + '":{"username":'+userId+'}}';
+    var content = '{"' + bridgeIp + '":{"username":"'+userId+'", "clientkey":"'+clientkey+'"}}';
 
     let pathToConfig = path.join(__dirname.replace('app.asar', 'app.asar.unpacked'), 'assets', 'phue_config');
 
@@ -123,36 +123,34 @@ window.findBridges = function(){
     //     displayBridges(result);
     // });
     
-    return hue.nupnpSearch();
+    return hue.discovery.nupnpSearch();
 }
 
-window.bridgeRegister = function(bridgeIp){
+window.bridgeRegister = async function(bridgeIp){
     var host = bridgeIp;
     userDescription = "light sync app";
 
     var onRegisterSuccess = function(result) {
-        var userId = JSON.stringify(result)
-        console.log("Created user: " + userId);
+        console.log("Created user: " + result.username);
         
-        writeConfigFile(bridgeIp, userId);
+        writeConfigFile(bridgeIp, result.username, result.clientkey);
     };
 
     var displayError = function(err) {
         console.log(err);
     };
 
-    var hueApi = new hue.HueApi();
+    
+    let unauthenticatedApi = await hue.api.createLocal(host).connect();
+    let createdUser;
+    var registerPromise = unauthenticatedApi.users.createUser('light-sync', os.platform());
 
-    var registerPromise = hueApi.registerUser(host, userDescription)
-
-    registerPromise.then(onRegisterSuccess)
-        .fail(displayError)
-        .done();
+    registerPromise.then(onRegisterSuccess, displayError);
     
     return registerPromise;
 }
 
-window.getLights = function(){
+window.getLights = async function(){
     var displayResult = function(result) {
         // console.log(JSON.stringify(result, null, 2));
     };
@@ -162,16 +160,16 @@ window.getLights = function(){
     var host = Object.keys(configObj)[0],
         username = configObj[host]["username"];
     
-    var api = new hue.HueApi(host, username);
+    var api = await hue.api.createLocal(host).connect(username);
     
-    var lightsPromise = api.lights()
+    var lightsPromise = api.lights.getAll();
 
-    lightsPromise.then(displayResult).done();
+    lightsPromise.then(displayResult);
 
     return lightsPromise;
 }
 
-window.getGroups = function(){
+window.getGroups = async function(){
     var displayResult = function(result) {
         console.log(JSON.stringify(result, null, 2));
     };
@@ -181,11 +179,11 @@ window.getGroups = function(){
     var host = Object.keys(configObj)[0],
         username = configObj[host]["username"];
     
-    var api = new hue.HueApi(host, username);
+    var api = await hue.api.createLocal(host).connect(username);
     
-    var groupsPromise = api.groups()
+    var groupsPromise = api.groups.getALl();
 
-    groupsPromise.then(displayResult).done();
+    groupsPromise.then(displayResult);
 
     return groupsPromise;
 }

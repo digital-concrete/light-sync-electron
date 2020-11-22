@@ -13,10 +13,11 @@ export class HueService {
     }
     
     findBridges(){
+        let that = this;
         var promise = (<any>window).findBridges()
         promise.then(function(res){
             console.log(res);
-            this._bridgeIp = res[0].ipaddress; 
+            that._bridgeIp = res[0].ipaddress; 
         })
         return promise;
     }

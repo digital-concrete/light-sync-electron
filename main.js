@@ -14,7 +14,10 @@ function createWindow () {
     width: 400, 
     height: 570,
     backgroundColor: '#ffffff',
-    icon: path.join(__dirname, '/dist/assets/icon/64x64.png')
+    icon: path.join(__dirname, '/dist/assets/icon/64x64.png'),
+    webPreferences: {
+        nodeIntegration: true
+    }
   })
 
 
@@ -75,3 +78,6 @@ app.on('before-quit', function() {
     });
   });
 });
+
+// needed to ignore api cert error
+app.commandLine.appendSwitch('ignore-certificate-errors');

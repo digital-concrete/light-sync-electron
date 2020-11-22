@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, ChangeDetectorRef, NgZone } from '@angular/core';
 import {Router} from "@angular/router";
-import {MatSnackBar} from '@angular/material';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import {FormControl} from '@angular/forms';
 
 
@@ -74,7 +74,7 @@ export class SetupComponent implements OnInit {
           // console.log("get light result");
           // console.log(res);
           this._zone.run(()=>{
-            this.availableLights = res.lights;
+            this.availableLights = res;
             this.showLoading = false;
             this.cdref.detectChanges();
         });
